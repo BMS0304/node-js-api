@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const axios = require('axios').default;
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 let users = [];
@@ -87,6 +88,29 @@ app.get('/users/demographics', function (req, res) {
         }
     });
     res.send(demographics);
+});
+
+app.post('/load-users', function (req, res) {
+    try {
+         const {count} = req.body;
+        const response = await axios.get(`https://random-data-api.com/api/users/random_user?size=${count}`);
+        const randomUsers = response.data;
+        const createdUsers = randomUsers.map((user, index)=>{
+        const id = users.length+index+1;
+        const name = user.first_name + " " + user.last_name;
+        const age = (new Date().getFullYear() - new Date(user.date_of_birth).getFullYear());
+         return {
+         id,
+         name,
+        age,
+         gender:user.gender};
+         });
+         users.push(...createdUsers);
+         return res.send(createdUsers);
+         } 
+         catch(err){
+            return res.status(500).send(`Internal server error: ${err}`);
+        }
 });
 
 
