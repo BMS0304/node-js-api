@@ -62,5 +62,33 @@ app.get('/users/:index', function (req, res) {
     res.send(user);
 });
 
+app.get('/users/names', function (req, res) {
+    const names = users.map(user=>user.name);
+    console.log(names);
+    res.send(names);
+});
+
+app.get('/users/demographics', function (req, res) {
+    const demographics = [];
+    users.forEach(user=>{
+        const {gender} = user;
+        const newGender = demographics.find(theGender => thisGender = theGender.genderName == `${gender}`);
+        if (newGender){
+            newGender.count++;
+            newGender.percentage = (newGender.count/users.length*100).toFixed(2)+"%";
+        } else {
+            let count = 1;
+            let newerGender = {
+                genderName: gender || 'undefined',
+                count,
+                percentage: (count/users.length*100).toFixed(2)+'%'
+            };
+            demographics.push(newerGender);
+        }
+    });
+    res.send(demographics);
+});
+
+
 app.listen(3000)
 console.log("App listening @http://localhost:3000")
